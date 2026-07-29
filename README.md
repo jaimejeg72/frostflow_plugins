@@ -14,6 +14,20 @@ Antes de instalar el plugin, asegúrate de contar con lo siguiente en la computa
 
 ---
 
+### ⚠️ PASO CRUCIAL EN PHOTOSHOP (PREFERENCIAS):
+
+Antes de instalar o cargar el plugin por primera vez, **DEBES ACTIVAR** la siguiente opción dentro de Photoshop:
+
+1. Ve a la barra de menú superior de Photoshop:
+   * **Windows**: `Editar` ➔ `Preferencias` ➔ `Plugins...` (o `Edit` ➔ `Preferences` ➔ `Plugins...`)
+   * **Mac**: `Photoshop` ➔ `Preferencias` ➔ `Plugins...`
+2. **Marca obligatoriamente la casilla**:
+   * **`Enable Developer Mode`** *(Habilitar modo de desarrollador / Permitir plugins UXP)*.
+   * **`Allow Plugins to Connect to Network`** *(Permitir que los plugins se conecten a la red / Acceso a Internet)*.
+3. Haz clic en **OK / Aceptar** y reinicia Photoshop.
+
+---
+
 ## 📦 2. Proceso de Instalación (2 Métodos)
 
 ### **Opción A: Instalación Automática mediante `.ccx` (Recomendada para Retocadores / Usuarios)**
