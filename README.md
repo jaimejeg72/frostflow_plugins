@@ -21,7 +21,7 @@ Antes de instalar o cargar el plugin por primera vez, **DEBES ACTIVAR** la sigui
 1. Ve a la barra de menú superior de Photoshop:
    * **Windows**: `Editar` ➔ `Preferencias` ➔ `Plugins...` (o `Edit` ➔ `Preferences` ➔ `Plugins...`)
    * **Mac**: `Photoshop` ➔ `Preferencias` ➔ `Plugins...`
-2. **Marca obligatoriamente la casilla**:
+2. **Marca obligatoriamente las casillas**:
    * **`Enable Developer Mode`** *(Habilitar modo de desarrollador / Permitir plugins UXP)*.
    * **`Allow Plugins to Connect to Network`** *(Permitir que los plugins se conecten a la red / Acceso a Internet)*.
 3. Haz clic en **OK / Aceptar** y reinicia Photoshop.
@@ -35,6 +35,7 @@ Antes de instalar o cargar el plugin por primera vez, **DEBES ACTIVAR** la sigui
 1. Descarga el paquete instalador oficial: **`FrostFlow_Retoucher_v0.0.1.ccx`**.
 2. Haz **doble clic** sobre el archivo `FrostFlow_Retoucher_v0.0.1.ccx`.
 3. Se abrirá la ventana de **Adobe Creative Cloud Desktop** solicitando confirmación de instalación.
+   * *Si Creative Cloud muestra un mensaje de advertencia diciendo que el plugin es no oficial o no publicado en el Marketplace, haz clic en **Instalar de todos modos** (Install anyway / Continue).*
 4. Haz clic en el botón **Instalar** (o *Install Locally*).
 5. Abre **Adobe Photoshop**.
 6. En la barra de menú superior de Photoshop, ve a: **Plugins ➔ FrostFlow Tareas**.
@@ -76,11 +77,28 @@ Si necesitas probar modificaciones en el código sin empaquetar:
 
 ### **Paso 4: Botones Superiores de la Cabecera**
 * **`↻` (Sync)**: Sincroniza manualmente los datos con el servidor backend en tiempo real.
-* **`🚪` (Sign Out)**: Cierra la sesión del editor actual de forma segura.
+* **`🚪` (Sign Out)**: Cierra la sesión del editor actual de forma segura para cambiar de usuario o ingresar con otro PIN.
 
 ---
 
-## 📂 4. Estructura de Archivos del Proyecto
+## ❓ 4. Preguntas Frecuentes y Solución de Problemas (Troubleshooting)
+
+### **1. Me sale el mensaje "Unassigned File" (Archivo No Asignado)**
+* **Causa A**: El proyecto no ha sido asignado a tu usuario en el portal web de administración (`admin/index.php`). Pide a Jaime que asigne el proyecto a tu usuario en la casilla *Editor Asignado*.
+* **Causa B**: El nombre de la foto guardada en Photoshop es completamente diferente al del servidor (ej. `DSC_0001` vs `Boda_001`). El nombre base debe contener el código de la foto.
+* **Causa C**: Estás logueado con el PIN de otro editor. Haz clic en `🚪 Sign Out` e ingresa con tu PIN correcto.
+
+### **2. Abrí una foto en Photoshop pero las tareas no cambian automáticamente**
+* Pulsa el botón de recarga manual **`↻`** en la barra superior del plugin.
+* El plugin monitorea activamente la pestaña activa en Photoshop y sincroniza automáticamente cada 60 segundos.
+
+### **3. El inicio de sesión da error o dice que el PIN es inválido**
+* Si ingresas el PIN incorrecto 5 veces consecutivas, el sistema bloquea los intentos durante **5 minutos** por seguridad.
+* Verifica que la computadora tenga conexión a Internet activa.
+
+---
+
+## 📂 5. Estructura de Archivos del Proyecto
 
 ```text
 frostflow_plugins/
@@ -97,7 +115,7 @@ frostflow_plugins/
 
 ---
 
-## ⚙️ 5. Conexión API Backend
+## ⚙️ 6. Conexión API Backend
 
 El plugin se conecta al backend centralizado en producción:
 - **Servidor**: `https://jaimeestevaphotographer.com/frostflow/backend/api.php`
