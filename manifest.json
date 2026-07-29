@@ -29,7 +29,8 @@
     "network": {
       "domains": [
         "http://localhost",
-        "https://jaimeestevaphotographer.com"
+        "https://jaimeestevaphotographer.com",
+        "https://jaimeestevaphotography.com"
       ]
     }
   }
