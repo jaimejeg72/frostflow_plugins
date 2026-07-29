@@ -1,0 +1,10 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+*.tmp
+
+# UXP / Package build outputs
+*.ccx
+node_modules/
+.vscode/
+.idea/

@@ -1,0 +1,601 @@
+/* ==========================================================================
+   FrostFlow Retoucher Plugin — Photoshop UXP Panel (v0.0.1)
+   Color Theme: Dark Neon Magenta (#FF007F) & Cyber Cyan (#00F0FF)
+   ========================================================================== */
+
+:root {
+  --bg-dark: #05070A;
+  --bg-card: #0E1322;
+  --bg-card-glass: rgba(14, 19, 34, 0.85);
+  --bg-input: #121827;
+  
+  --primary-pink: #FF007F;
+  --primary-pink-hover: #FF3399;
+  --primary-pink-glow: rgba(255, 0, 127, 0.25);
+  
+  --cyan-accent: #00F0FF;
+  --cyan-glow: rgba(0, 240, 255, 0.25);
+  
+  --text-main: #E2E8F0;
+  --text-muted: #64748B;
+  --text-sub: #94A3B8;
+  
+  --green-success: #10B981;
+  --green-glow: rgba(16, 185, 129, 0.2);
+  
+  --red-error: #EF4444;
+  --red-glow: rgba(239, 68, 68, 0.2);
+
+  --border-color: rgba(255, 0, 127, 0.2);
+  --border-focus: #FF007F;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   CONTAINERS & VIEWS
+   ========================================================================== */
+
+.view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 14px;
+  gap: 12px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-logo {
+  height: 22px;
+  width: auto;
+}
+
+.brand-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary-pink);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.header-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-card);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 0, 127, 0.2);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cyan-accent);
+}
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-sub);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--primary-pink);
+  color: var(--primary-pink);
+  background: var(--primary-pink-glow);
+}
+
+.icon-btn.spinning svg,
+.icon-btn.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   PIN PAD LOGIN VIEW
+   ========================================================================== */
+
+#view-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.pin-logo-area {
+  margin-bottom: 20px;
+}
+
+.pin-logo-area img {
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+.pin-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary-pink);
+  letter-spacing: 1.5px;
+}
+
+.pin-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.pin-dots {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-input);
+  transition: all 0.2s ease;
+}
+
+.pin-dot.filled {
+  background: var(--primary-pink);
+  border-color: var(--primary-pink);
+  box-shadow: 0 0 10px var(--primary-pink);
+}
+
+.pin-dot.error {
+  background: var(--red-error);
+  border-color: var(--red-error);
+  box-shadow: 0 0 10px var(--red-error);
+}
+
+.pin-dots.shaking {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.pin-key {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pin-key:hover {
+  background: var(--primary-pink-glow);
+  border-color: var(--primary-pink);
+  color: #FFF;
+}
+
+.pin-key:active {
+  transform: scale(0.92);
+}
+
+.pin-key.action-key {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.pin-error-text {
+  color: var(--red-error);
+  font-size: 11px;
+  margin-top: 12px;
+  min-height: 16px;
+}
+
+/* ==========================================================================
+   IDLE / NO MATCH STATES
+   ========================================================================== */
+
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px 16px;
+  background: var(--bg-card-glass);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  flex: 1;
+  gap: 12px;
+}
+
+.empty-state-icon {
+  font-size: 38px;
+  margin-bottom: 4px;
+}
+
+.empty-state-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cyan-accent);
+}
+
+.empty-state-desc {
+  font-size: 11px;
+  color: var(--text-sub);
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+.filename-badge {
+  display: inline-block;
+  background: var(--bg-input);
+  border: 1px dashed var(--border-color);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--primary-pink);
+  word-break: break-all;
+}
+
+/* ==========================================================================
+   DISAMBIGUATION (MULTI-PROJECT MATCH)
+   ========================================================================== */
+
+.disambiguation-card {
+  background: var(--bg-card);
+  border: 1px solid var(--cyan-accent);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.disambiguation-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan-accent);
+}
+
+.project-select-item {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-select-item:hover {
+  border-color: var(--primary-pink);
+  background: var(--primary-pink-glow);
+}
+
+.project-select-name {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.project-select-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   ACTIVE TASK LIST VIEW
+   ========================================================================== */
+
+.project-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-title-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.paid {
+  background: var(--green-glow);
+  color: var(--green-success);
+  border: 1px solid var(--green-success);
+}
+
+.status-badge.unpaid {
+  background: var(--red-glow);
+  color: var(--red-error);
+  border: 1px solid var(--red-error);
+}
+
+.photo-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.photo-filename {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary-pink);
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-input);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan-accent), var(--primary-pink));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.tasks-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Task Checklist */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-item:hover {
+  border-color: var(--border-color);
+  background: rgba(255, 0, 127, 0.05);
+}
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-top: 1px;
+}
+
+.task-item.done .task-checkbox {
+  background: var(--primary-pink);
+  border-color: var(--primary-pink);
+  box-shadow: 0 0 8px var(--primary-pink);
+}
+
+.task-checkbox-icon {
+  display: none;
+  width: 12px;
+  height: 12px;
+  stroke: #FFF;
+  stroke-width: 3;
+}
+
+.task-item.done .task-checkbox-icon {
+  display: block;
+}
+
+.task-label {
+  font-size: 12px;
+  color: var(--text-main);
+  line-height: 1.4;
+  word-break: break-word;
+  flex: 1;
+}
+
+.task-item.done .task-label {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+/* Action Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-pink), #D5006A);
+  color: #FFF;
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px var(--primary-pink-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-pink-hover), var(--primary-pink));
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Completed Celebration Card */
+.completed-banner {
+  background: var(--green-glow);
+  border: 1px solid var(--green-success);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.completed-banner-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--green-success);
+}
+
+/* Toast Message Floating Banner */
+.toast-banner {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--cyan-accent);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transform: translateY(60px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.toast-banner.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-banner.error {
+  border-color: var(--red-error);
+}
