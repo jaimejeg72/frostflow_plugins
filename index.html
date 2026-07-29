@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>FrostFlow Retoucher Plugin</title>
@@ -54,7 +54,7 @@
         <img src="logo_white.png" class="brand-logo" alt="Logo" onerror="this.style.display='none'">
         <div>
           <div class="brand-title">FROSTFLOW</div>
-          <div class="brand-subtitle">RETOUCHER</div>
+          <div class="brand-subtitle">RETOUCHER (v0.0.1)</div>
         </div>
       </div>
 
@@ -63,62 +63,49 @@
           <span id="user-name">Editor</span>
         </div>
 
-        <button id="btn-refresh" class="icon-btn" title="Sincronizar (↻)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M23 4v6h-6"></path>
-            <path d="M1 20v-6h6"></path>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-          </svg>
-        </button>
-
-        <button id="btn-logout" class="icon-btn" title="Cerrar Sesión">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
-        </button>
+        <button id="btn-refresh" class="icon-btn" title="Sync (↻)">↻</button>
+        <button id="btn-logout" class="icon-btn" title="Sign Out">🚪</button>
       </div>
     </header>
 
     <!-- VIEW: IDLE (NO ACTIVE DOCUMENT IN PHOTOSHOP) -->
     <div id="view-idle" class="empty-state-card">
       <div class="empty-state-icon">📷</div>
-      <div class="empty-state-title">Sin Archivo Activo</div>
+      <div class="empty-state-title">No Active Document</div>
       <div class="empty-state-desc">
-        Abre o activa una imagen de tu proyecto en Photoshop para sincronizar tus tareas.
+        Open or activate an image from your project in Photoshop to sync your tasks.
       </div>
     </div>
 
     <!-- VIEW: NOT FOUND (ACTIVE DOCUMENT DOES NOT MATCH ANY ASSIGNED TASKS) -->
     <div id="view-not-found" class="empty-state-card" style="display: none;">
       <div class="empty-state-icon">🔎</div>
-      <div class="empty-state-title">Archivo No Asignado</div>
-      <div id="not-found-filename" class="filename-badge">archivo.psd</div>
+      <div class="empty-state-title">Unassigned File</div>
+      <div id="not-found-filename" class="filename-badge">file.psd</div>
       <div class="empty-state-desc">
-        Este archivo no tiene tareas pendientes en tus proyectos asignados.
+        This file has no pending tasks in your assigned projects.
       </div>
     </div>
 
     <!-- VIEW: DISAMBIGUATION (MULTI-PROJECT MATCH FOR SAME FILENAME) -->
     <div id="view-disambiguation" class="empty-state-card" style="display: none; align-items: stretch; text-align: left;">
-      <div class="disambiguation-title">⚠️ Coincidencia Múltiple</div>
+      <div class="disambiguation-title">⚠️ Multiple Matches</div>
       <div class="empty-state-desc" style="max-width: 100%;">
-        Este archivo existe en más de un proyecto asignado. Selecciona en cuál estás trabajando:
+        This file exists in more than one assigned project. Select which project you are working on:
       </div>
-      <div id="disambiguation-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+      <div id="disambiguation-list" style="display: flex; flex-direction: column; margin-top: 8px;">
         <!-- Items inserted via JS -->
       </div>
     </div>
 
     <!-- VIEW: TASKS CHECKLIST (MATCH FOUND) -->
-    <div id="view-tasks" style="display: none; flex-direction: column; gap: 10px; flex: 1; overflow: hidden;">
+    <div id="view-tasks" style="display: none; flex-direction: column; flex: 1; overflow: hidden;">
       
       <!-- Project Banner -->
       <div class="project-banner">
         <div class="project-header-row">
-          <span id="project-name" class="project-title-text">Proyecto</span>
-          <span id="payment-status-badge" class="status-badge unpaid">PENDIENTE</span>
+          <span id="project-name" class="project-title-text">Project</span>
+          <span id="payment-status-badge" class="status-badge unpaid">PENDING</span>
         </div>
 
         <div class="photo-title-row">
@@ -133,14 +120,14 @@
 
       <!-- Completed Celebration Banner (if all tasks done) -->
       <div id="completed-banner" class="completed-banner" style="display: none;">
-        <div class="completed-banner-title">🎉 ¡FOTO COMPLETADA!</div>
+        <div class="completed-banner-title">🎉 PHOTO COMPLETED!</div>
         <div style="font-size: 11px; color: var(--text-main);">
-          Todas las tareas de esta imagen han sido finalizadas.
+          All retouching tasks for this image have been finished.
         </div>
       </div>
 
       <!-- Checklist Section Title -->
-      <div class="tasks-section-title">TAREAS DE RETOQUE:</div>
+      <div class="tasks-section-title">RETOUCHING TASKS:</div>
 
       <!-- Tasks List -->
       <div id="tasks-list" class="tasks-list">
@@ -149,7 +136,7 @@
 
       <!-- Action Button -->
       <button id="btn-mark-all" class="btn-primary">
-        <span>✔ Marcar Todo Como Done</span>
+        <span>✔ Mark All As Completed</span>
       </button>
 
     </div>
@@ -159,7 +146,7 @@
   <!-- TOAST NOTIFICATION BANNER -->
   <div id="toast-msg" class="toast-banner">
     <span id="toast-icon">ℹ️</span>
-    <span id="toast-text">Notificación</span>
+    <span id="toast-text">Notification</span>
   </div>
 
   <script src="main.js"></script>

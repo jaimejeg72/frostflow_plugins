@@ -77,6 +77,48 @@ function stripExtension(filename) {
   return clean.substring(0, lastDot).toLowerCase().trim();
 }
 
+/**
+ * Normalize filename by removing extension, leading underscores/hyphens,
+ * and trailing retouch/edit suffixes (_edit, -edit, _copy, -copy, _v1, _final, etc.)
+ */
+function normalizeFilename(filename) {
+  let clean = stripExtension(filename);
+  if (!clean) return '';
+  // Strip leading underscores, hyphens, spaces
+  clean = clean.replace(/^[_-\s]+/, '');
+  // Strip trailing edit/copy suffixes like _edit, -edit, _copy, -copy, _v1, _v2, _final, _retouch, _psd
+  clean = clean.replace(/[-_](edit|copy|v\d+|final|retouch|processed|psd)$/i, '');
+  return clean.trim();
+}
+
+/**
+ * Smart multi-tier filename comparison:
+ * 1. Exact base match (case-insensitive)
+ * 2. Normalized match (without leading _ or trailing _edit)
+ * 3. Core string inclusion match (if >= 4 chars)
+ */
+function isFilenameMatch(imgFilename, docFilename) {
+  if (!imgFilename || !docFilename) return false;
+
+  const base1 = stripExtension(imgFilename);
+  const base2 = stripExtension(docFilename);
+
+  if (base1 === base2) return true;
+
+  const norm1 = normalizeFilename(imgFilename);
+  const norm2 = normalizeFilename(docFilename);
+
+  if (norm1 && norm2) {
+    if (norm1 === norm2) return true;
+
+    if (norm1.length >= 4 && norm2.length >= 4) {
+      if (norm1.includes(norm2) || norm2.includes(norm1)) return true;
+    }
+  }
+
+  return false;
+}
+
 // ──────────────────────────────────────────────
 // API REQUEST HELPER
 // ──────────────────────────────────────────────
@@ -117,7 +159,7 @@ function showView(viewId) {
   const views = ['view-idle', 'view-not-found', 'view-disambiguation', 'view-tasks'];
   views.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = (id === viewId) ? (id === 'view-tasks' ? 'flex' : 'flex') : 'none';
+    if (el) el.style.display = (id === viewId) ? 'flex' : 'none';
   });
 }
 
@@ -194,11 +236,11 @@ async function verifyPin(pin) {
       onLoginSuccess(data);
     } else {
       shakeDots();
-      showPinError(data.message || 'PIN incorrecto.');
+      showPinError(data.message || 'Incorrect PIN.');
     }
   } catch (err) {
     shakeDots();
-    showPinError('No se pudo conectar al servidor.');
+    showPinError('Could not connect to server.');
   }
 }
 
@@ -262,7 +304,7 @@ function clearSession() {
 }
 
 // ──────────────────────────────────────────────
-// LOAD ASSIGNED PROJECTS & PENDING TASKS
+// LOAD ASSIGNED PROJECTS & IMAGES
 // ──────────────────────────────────────────────
 async function loadEditorData() {
   if (!isAuthenticated || !editorId) return;
@@ -277,15 +319,35 @@ async function loadEditorData() {
       assignedProjects = projRes.projects || [];
     }
 
-    // 2. Fetch all assigned pending images + tasks across editor projects
-    const imgRes = await fetchAPI({ action: 'get_pending_images', role: 'editor' });
-    if (imgRes && imgRes.success) {
-      allPendingImages = imgRes.images || [];
+    // 2. Fetch ALL assigned images (pending, assigned, completed) across editor projects
+    let allImages = [];
+    if (assignedProjects.length > 0) {
+      for (const proj of assignedProjects) {
+        try {
+          const pRes = await fetchAPI({ action: 'get_project_images', project_id: proj.ff_project_id, role: 'editor' });
+          if (pRes && pRes.success && pRes.images) {
+            pRes.images.forEach(img => {
+              img.ff_project_name = proj.ff_project_name;
+              img.ff_project_is_paid = proj.ff_project_is_paid;
+            });
+            allImages = allImages.concat(pRes.images);
+          }
+        } catch (e) {}
+      }
     }
 
+    // Fallback if get_project_images returned no images
+    if (allImages.length === 0) {
+      const imgRes = await fetchAPI({ action: 'get_pending_images', role: 'editor', editor_id: editorId });
+      if (imgRes && imgRes.success) {
+        allImages = imgRes.images || [];
+      }
+    }
+
+    allPendingImages = allImages;
     evaluateActiveDocument();
   } catch (err) {
-    showToast('Error al actualizar datos.', true);
+    showToast('Error refreshing data.', true);
   } finally {
     if (btnRefresh) btnRefresh.classList.remove('spinning');
   }
@@ -311,11 +373,8 @@ async function evaluateActiveDocument() {
   activeDocName = rawDocName;
   activeBaseName = baseName;
 
-  // Search matches by stripping extensions on both sides
-  const matches = allPendingImages.filter(img => {
-    const imgBase = stripExtension(img.ff_image_filename);
-    return imgBase === baseName;
-  });
+  // Search matches using smart multi-tier comparison (exact, normalized, substring)
+  const matches = allPendingImages.filter(img => isFilenameMatch(img.ff_image_filename, rawDocName));
 
   currentMatches = matches;
 
@@ -326,7 +385,7 @@ async function evaluateActiveDocument() {
     // Multiple matches found across projects -> Disambiguation UI
     renderDisambiguation(matches);
   } else {
-    // 0 matches found in pending cache -> query server for exact/base filename if image completed
+    // 0 matches found in cache
     currentMatch = null;
     document.getElementById('not-found-filename').textContent = baseName;
     showView('view-not-found');
@@ -338,18 +397,18 @@ function setActiveMatch(imageObj) {
 
   // Find project details from assignedProjects cache
   const proj = assignedProjects.find(p => p.ff_project_id == imageObj.ff_project_id) || {
-    ff_project_name: imageObj.ff_project_name || 'Proyecto',
+    ff_project_name: imageObj.ff_project_name || 'Project',
     ff_project_is_paid: 0
   };
 
   // Render project header
-  document.getElementById('project-name').textContent = proj.ff_project_name || 'Proyecto';
+  document.getElementById('project-name').textContent = proj.ff_project_name || 'Project';
 
   // Render payment status
   const isPaid = parseInt(proj.ff_project_is_paid) === 1;
   const payBadge = document.getElementById('payment-status-badge');
   if (payBadge) {
-    payBadge.textContent = isPaid ? 'PAGADO' : 'PENDIENTE';
+    payBadge.textContent = isPaid ? 'PAID' : 'PENDING';
     payBadge.className = `status-badge ${isPaid ? 'paid' : 'unpaid'}`;
   }
 
@@ -368,8 +427,8 @@ function renderDisambiguation(matches) {
 
   listEl.innerHTML = matches.map((img, idx) => `
     <div class="project-select-item" data-idx="${idx}">
-      <div class="project-select-name">📁 ${img.ff_project_name || 'Proyecto #' + img.ff_project_id}</div>
-      <div class="project-select-meta">Imagen: ${img.ff_image_filename} · ${img.tasks ? img.tasks.length : 0} tareas</div>
+      <div class="project-select-name">📁 ${img.ff_project_name || 'Project #' + img.ff_project_id}</div>
+      <div class="project-select-meta">Image: ${img.ff_image_filename} · ${img.tasks ? img.tasks.length : 0} tasks</div>
     </div>
   `).join('');
 
@@ -410,7 +469,7 @@ function renderTasksList(tasks) {
   }
 
   if (total === 0) {
-    container.innerHTML = '<div class="empty-state-desc" style="padding: 10px;">No hay tareas asignadas a esta foto.</div>';
+    container.innerHTML = '<div class="empty-state-desc" style="padding: 10px;">No tasks assigned to this photo.</div>';
     return;
   }
 
@@ -465,7 +524,7 @@ async function toggleTask(taskObj, newStatus) {
     if (currentMatch && currentMatch.tasks) {
       renderTasksList(currentMatch.tasks);
     }
-    showToast('Error al actualizar tarea en el servidor.', true);
+    showToast('Error updating task on server.', true);
   }
 }
 
@@ -479,7 +538,7 @@ async function markAllTasksDone() {
     await toggleTask(t, 'done');
   }
 
-  showToast('¡Todas las tareas marcadas como realizadas!');
+  showToast('All tasks marked as completed!');
 }
 
 // ──────────────────────────────────────────────
@@ -522,6 +581,29 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-refresh').addEventListener('click', loadEditorData);
   document.getElementById('btn-logout').addEventListener('click', onLogout);
   document.getElementById('btn-mark-all').addEventListener('click', markAllTasksDone);
+
+  // Physical Keyboard listener for PIN entry
+  document.addEventListener('keydown', (e) => {
+    if (isAuthenticated) return;
+
+    if (e.key >= '0' && e.key <= '9') {
+      if (currentPinDigits.length < PIN_LENGTH) {
+        currentPinDigits.push(e.key);
+        updatePinDots();
+
+        if (currentPinDigits.length === PIN_LENGTH) {
+          const pin = currentPinDigits.join('');
+          setTimeout(() => verifyPin(pin), 120);
+        }
+      }
+    } else if (e.key === 'Backspace') {
+      currentPinDigits.pop();
+      updatePinDots();
+    } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+      currentPinDigits = [];
+      updatePinDots();
+    }
+  });
 
   // Check saved session
   loadSession();
